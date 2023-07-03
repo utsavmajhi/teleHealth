@@ -1,0 +1,15 @@
+{
+  "name": "createDoctorUserLambda.js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "createBoothLambda.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.810.0",
+    "uuid": "^9.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

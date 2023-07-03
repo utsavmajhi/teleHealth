@@ -1,21 +1,38 @@
 #!/usr/bin/env node
 
 const cdk = require('aws-cdk-lib');
-const { TeleHealthBeStack } = require('../lib/tele_health-be-stack');
+const { TeleHealthCommonStack } = require('../lib/th-common-stack')
+const { TeleUserManagementStack } = require('../lib/th-user-management-stack')
 
 const app = new cdk.App();
-new TeleHealthBeStack(app, 'TeleHealthBeStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+if(!app.node.tryGetContext('deploy-environment')){
+    throw 'Error Please provide environment'
+}
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
+let config = {}
+if(app.node.tryGetContext('deploy-environment') === 'sit'){
+    config = app.node.tryGetContext('sit-config')
+}else if(app.node.tryGetContext('deploy-environment') === 'uat'){
+    config = app.node.tryGetContext('uat-config')
+} else if (app.node.tryGetContext('deploy-environment') === 'prod'){
+    config = app.node.tryGetContext('prod-config')
+}
 
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-});
+const rootStack = new TeleHealthCommonStack(app, 'th-common-stack',{
+    env: config.env,
+    attributes: config.attributes,
+    roles: config.roles,
+    allowCrossOrigins: config.allowCrossOrigins})
+
+new TeleUserManagementStack(app, 'th-user-management-stack',{
+    env: config.env,
+    attributes: config.attributes,
+    roles: config.roles,
+    allowCrossOrigins: config.allowCrossOrigins,
+    layers: rootStack.layers,
+    userPools: rootStack.userPools
+})
+
+
+
