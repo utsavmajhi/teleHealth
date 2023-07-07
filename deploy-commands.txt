@@ -1,0 +1,8 @@
+//LATEST DEPLOYMENT
+cdk deploy --profile atg-uat --all -c deploy-environment=uat
+cdk bootstrap aws://023654023850/eu-west-1  -c deploy-environment=prod // One Time Only
+cdk deploy --profile atg-prod --all -c deploy-environment=prod
+
+cdk deploy --profile default --all -c deploy-environment=sit
+
+cdk deploy --profile default ps-packing-service-stack -c deploy-environment=sit
